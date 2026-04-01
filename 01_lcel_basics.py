@@ -29,7 +29,7 @@ def main():
 
     # 5. 调用执行
     print("=== 开始运行 LCEL 基础测试 ===")
-    response = chain.invoke({"question": "请用一句话解释什么是大语言模型（LLM）？"})
+    response = chain.invoke({"question": "讲一个笑话"})
     print("\n[AI 的回答]:")
     print(response)
 
