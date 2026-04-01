@@ -11,6 +11,10 @@ def main():
     
     # 场景：我们需要模型先概括一个主题，然后根据概括，一并输出：1. 该主题的优点，2. 该主题的缺点。
     # 用 RunnableParallel 并行执行优点和缺点的生成，可以降低总耗时。
+    # 【LangChain v0.2/v0.3 最新知识点】：
+    # 1. `RunnableParallel` 允许并发执行多个 Runnable。它的输入会被同时分发给内部的每个链，极大地提升了处理效率。
+    # 2. `RunnablePassthrough` 常用于保持上一层的数据原封不动地传递给下一层。
+    # 3. 这两个组件是 LCEL 高级编排中最核心的工具，彻底替代了以前基于 Callback 或 asyncio 的复杂并发写法。
 
     # 第一个步骤：根据输入的单词生成简介
     prompt_intro = ChatPromptTemplate.from_template("请用10个字概括：{topic}")

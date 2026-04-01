@@ -67,15 +67,13 @@ def main():
     workflow.add_edge(START, "classifier")
 
     # 条件边：从分类器出来后，根据 route_question 函数返回的字符串走向不同节点
+    # 【LangGraph 最新知识点】：
+    # 1. 在最新版本的 LangGraph 中，如果你的路由函数 `route_question` 返回的字符串
+    #    刚好就是要跳转的节点的名称，那么你可以省略第三个参数（映射字典）。
+    # 2. 这种按名称直接路由的约定俗成（Convention over Configuration）大大简化了代码。
     workflow.add_conditional_edges(
         "classifier",       # 判断起点
-        route_question,     # 用于判断的逻辑方法
-        # 如果返回的是 "math_node"，就走名为 math_node 的节点
-        # 如果返回的是 "general_node"，就走名为 general_node 的节点
-        {
-            "math_node": "math_node",
-            "general_node": "general_node"
-        }
+        route_question      # 用于判断的逻辑方法
     )
 
     # 将两个子处理节点的出口都汇聚到 END

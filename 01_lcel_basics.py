@@ -23,11 +23,15 @@ def main():
     output_parser = StrOutputParser()
 
     # 4. 构建 LCEL 链条 (LangChain Expression Language)
-    # LCEL 的核心使用 `|` （管道）符号连接。这和 Linux 里的管道一样。
-    # 数据流： 输入的字典 -> prompt(格式化模版) -> llm(生成原始回复) -> output_parser(提取字符串)
+    # 【LangChain v0.2/v0.3 最新知识点】：
+    # 1. LCEL 是当前 LangChain 推荐和唯一的标准链条构建方式，之前的 `LLMChain` 已被弃用（Deprecated）。
+    # 2. `|` (管道符号) 被重载以组合 `Runnable` 协议的对象，这意味着所有的 LCEL 组件（Prompt, Model, OutputParser）都实现了相同的接口（`invoke`, `stream`, `batch`）。
+    # 3. 数据流：输入的字典 -> prompt(格式化模板，返回PromptValue) -> llm(生成原始回复AIMessage) -> output_parser(提取字符串)
     chain = prompt | llm | output_parser
 
     # 5. 调用执行
+    # 【LangChain v0.2/v0.3 最新知识点】：
+    # `invoke` 替代了旧版本的 `__call__` 或 `run`。所有 `Runnable` 组件都暴露了 `invoke`, `ainvoke`, `stream`, `astream`, `batch`, `abatch` 等标准方法。
     print("=== 开始运行 LCEL 基础测试 ===")
     response = chain.invoke({"question": "讲一个笑话"})
     print("\n[AI 的回答]:")

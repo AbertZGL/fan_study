@@ -1,7 +1,12 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.output_parsers import StrOutputParser
-from langchain_community.chat_message_histories import ChatMessageHistory
+# 【LangChain v0.2/v0.3 最新知识点】：
+# 1. 记忆组件大调整：早期的 `ConversationBufferMemory` 等抽象被弃用，
+#    现推荐基于 `RunnableWithMessageHistory` + 纯粹的 MessageHistory 来处理。
+# 2. 内存历史模块迁移：以前从 `langchain_community` 或 `langchain.memory` 导入的记录类，
+#    现在标准实现被移入 `langchain_core.chat_history` (如 InMemoryChatMessageHistory)。
+from langchain_core.chat_history import InMemoryChatMessageHistory
 import importlib
 
 setup_module = importlib.import_module("00_multi_model_setup")
@@ -13,7 +18,7 @@ store = {}
 def get_session_history(session_id: str):
     # 根据 session_id 获取对话历史列表（如果不存在则创建一个全新的）
     if session_id not in store:
-        store[session_id] = ChatMessageHistory()
+        store[session_id] = InMemoryChatMessageHistory()
     return store[session_id]
 
 def main():

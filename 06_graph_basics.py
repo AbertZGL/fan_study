@@ -4,6 +4,9 @@ from typing import TypedDict
 class MyState(TypedDict):
     """
     定义图的状态：图在各个节点传递时，拥有一份共享全局数据变量
+    【LangGraph 最新知识点】：
+    1. `TypedDict` 是定义 State 的最基础方式。默认情况下，每个节点返回的字典会**覆盖** (Overwrite) 当前状态中对应的键。
+    2. 如果你需要累加（比如把新消息 append 到消息列表中），需要使用 `typing.Annotated[list, operator.add]` (通常写作 `Annotated[list, add]`) 来声明该字段的更新合并策略。
     """
     input_text: str
     counter: int

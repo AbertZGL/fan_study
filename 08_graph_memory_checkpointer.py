@@ -7,8 +7,10 @@ import importlib
 setup_module = importlib.import_module("00_multi_model_setup")
 get_model = setup_module.get_model
 
-# Annotated[list, add_messages] 告诉 Langgraph 这个变量是一个列表，当向列表中添加新元素时，
-# 它不仅是覆盖，而是附加(append)。这非常适合聊天记录。
+# 【LangGraph 最新知识点】：
+# 1. `add_messages` 是 LangGraph 官方提供的一个 Reducer 函数。
+# 2. `Annotated[list, add_messages]` 告诉 LangGraph 这个变量是一个列表，当向列表中添加新元素时，
+#    它不仅是覆盖，而是智能附加(append)或根据 message ID 进行合并更新。这非常适合聊天记录和工具调用结果的更新。
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
@@ -30,6 +32,10 @@ def main():
     workflow.add_edge("chat_model", END)
 
     # 核心：使用 MemorySaver。在生产中可以换为 PostgresSaver 或 SqliteSaver 等数据库持久化
+    # 【LangGraph 最新知识点】：
+    # 1. Checkpointer 是 LangGraph 实现 "Stateful" (有状态) 应用的核心机制。
+    # 2. 每执行完一个节点，Checkpointer 就会将当前的 State 保存为一个 Snapshot（快照）。
+    # 3. 这不仅实现了记忆（Memory），更重要的是它支持 "Time Travel" (时光倒流) 和 "Human-in-the-loop" (人类介入审批)。
     memory = MemorySaver()
 
     # 编译时必须把 checkpointer 注入进去

@@ -1,4 +1,4 @@
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.tools import tool
 import importlib
@@ -34,8 +34,12 @@ def main():
     memory = MemorySaver()
     
     # 4. 利用 langgraph 官方提供的高能构建封装，一行代码创建一个带有循环判断能力、自动调用工具能力的 Graph
-    # create_react_agent 其实背后构造了一个包含: LLM 调用节点、分支判断节点、工具执行节点并构成循环回路的 Graph 图。
-    agent = create_react_agent(
+    # 【LangGraph 最新知识点】：
+    # 1. 在 LangGraph V1.0 之后，原先的 `create_react_agent` 被迁移到了 `langchain.agents.create_agent`！
+    # 2. 彻底替代了 LangChain 原来的 `AgentExecutor`。
+    # 3. 它背后自动构造了一个循环图：接收消息 -> 丢给模型 -> 如果模型说要用工具，就走工具节点并执行 -> 工具结果返回给模型重新思考 -> 直到不再调用工具则 END。
+    # 4. 这不仅让执行过程更加透明可控，更允许你通过传入 `checkpointer` 实现记忆和随时中断。
+    agent = create_agent(
         model=llm, 
         tools=tools, 
         checkpointer=memory

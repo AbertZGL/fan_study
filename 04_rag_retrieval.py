@@ -31,15 +31,23 @@ def main():
     splits = text_splitter.split_documents(docs)
 
     # --- 3. 向量化与存储 (Embeddings & VectorStores) ---
-    # 如果你没有 OpenAI api key 的向量模型使用权限，也可以换为 HuggingFaceEmbeddings()
+    # 【LangChain v0.2/v0.3 最新知识点】：
+    # 1. 向量数据库推荐使用独立的厂商包。FAISS 是一个优秀的本地 CPU 向量检索方案。
+    # 2. `Embeddings` 接口现在是 `langchain_core` 标准协议的一部分，这使得更换 Embedding 模型变得极其简单。
+    # 3. 如果你没有 OpenAI api key 的向量模型使用权限，也可以换为 HuggingFaceEmbeddings()
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
     vectorstore = FAISS.from_documents(documents=splits, embedding=embeddings)
     
     # 将向量数据库转化为 Retriever（检索器）
-    # 当调用 retriever.invoke("问题") 时，它会返回相关的切片文档
+    # 【LangChain v0.2/v0.3 最新知识点】：
+    # `Retriever` 本身也是一个 `Runnable` 对象。它接收一个字符串输入，并异步/同步返回 `List[Document]`。
+    # 这意味着它可以直接被放入 LCEL 管道中，作为链条的起点或中间环节。
     retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
 
     # --- 4. 构建回答 Prompt 和 LCEL Chain ---
+    # 【LangChain v0.2/v0.3 最新知识点】：
+    # 1. 传统的 `RetrievalQA` 类已逐渐被 LCEL 的显式链条取代，这能让开发者更清晰地看到 Prompt 的渲染和 Context 的注入。
+    # 2. 这种显式的“声明式”写法让调试 RAG 流程（查看中间步骤）变得更加直观。
     template = """基于以下提供的上下文（Context）来回答用户的问题。如果上下文中没提到，请回答不知情。
 
 Context: {context}

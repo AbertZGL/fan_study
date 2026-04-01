@@ -6,6 +6,11 @@ load_dotenv()
 
 # =========================================
 # 多模型接入示例：如何初始化不同厂商的大模型
+# 【LangChain v0.2/v0.3 最新知识点】：
+# 1. 架构解耦：以前所有的集成都在 `langchain` 或 `langchain-community` 中，
+#    现在官方推荐使用独立的厂商包（Partner Packages），例如 `langchain-openai`, `langchain-anthropic`。
+# 2. ChatModel 成为主流：早期的 `LLM` 类（纯文本补全）已逐渐被边缘化，
+#    现在的核心是 `BaseChatModel`（基于角色的消息列表传递），例如 `ChatOpenAI`, `ChatAnthropic`。
 # =========================================
 
 def get_openai_model(temperature=0):
